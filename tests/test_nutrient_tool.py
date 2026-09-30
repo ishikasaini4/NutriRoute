@@ -40,3 +40,24 @@ def test_unknown_food_not_found():
 def test_unknown_nutrient_for_known_food_not_found():
     result = lookup_nutrient(LookupNutrientInput(food_name="banana", nutrient="calcium", amount_g=100))
     assert result.found is False
+
+
+def test_space_separator_normalizes():
+    result = lookup_nutrient(LookupNutrientInput(food_name="banana", nutrient="vitamin c", amount_g=100))
+    assert result.found is True
+    assert result.value == 8.7
+    assert result.unit == "mg"
+
+
+def test_hyphen_separator_normalizes():
+    result = lookup_nutrient(LookupNutrientInput(food_name="chicken-breast", nutrient="sodium", amount_g=100))
+    assert result.found is True
+    assert result.value == 74.0
+    assert result.unit == "mg"
+
+
+def test_mixed_case_hyphen_and_whitespace_normalizes():
+    result = lookup_nutrient(LookupNutrientInput(food_name="  Chicken - Breast  ", nutrient="Protein", amount_g=100))
+    assert result.found is True
+    assert result.value == 31.0
+    assert result.unit == "g"

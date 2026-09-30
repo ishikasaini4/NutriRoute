@@ -7,12 +7,19 @@ Member D adds them there, import from contracts.tools instead of redefining
 here.
 """
 
+import re
 import sqlite3
 from pathlib import Path
 
 from pydantic import BaseModel
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "nutrients.sqlite"
+
+
+def _normalize(value: str) -> str:
+    """Lowercase, trim, and collapse whitespace/hyphen runs to a single
+    underscore, so 'vitamin c', 'vitamin-c', and 'vitamin_c' all match."""
+    return re.sub(r"[\s\-]+", "_", value.strip().lower())
 
 
 class LookupNutrientInput(BaseModel):
@@ -35,7 +42,7 @@ def lookup_nutrient(
     try:
         row = conn.execute(
             "SELECT amount_per_100g, unit FROM nutrients WHERE food_name = ? AND nutrient = ?",
-            (input.food_name.strip().lower(), input.nutrient.strip().lower()),
+            (_normalize(input.food_name), _normalize(input.nutrient)),
         ).fetchone()
     finally:
         conn.close()

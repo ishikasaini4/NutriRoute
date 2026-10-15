@@ -45,8 +45,8 @@ def test_multi_tool_chain_nutrient_then_safety_then_planning():
         arguments_json=json.dumps({"food_or_nutrient": "spinach", "medication_or_condition": "warfarin"}),
     )
     planning_call = ToolCallRequest(
-        id="call_3", name="suggest_meal_plan",
-        arguments_json=json.dumps({"goal": "high_potassium"}),
+        id="call_3", name="query_food_bank",
+        arguments_json=json.dumps({"dietary_restrictions": ["vegan"], "max_calories": 250}),
     )
     client = FakeLLMClient(
         [
@@ -58,19 +58,21 @@ def test_multi_tool_chain_nutrient_then_safety_then_planning():
                     "Spinach (100g) has 483.0mcg vitamin K [source: lookup_nutrient]. "
                     "Disclaimer: This is not medical advice; consult a healthcare "
                     "professional before changing your diet or medication. "
-                    "For high potassium, try: banana, spinach salad."
+                    "For a vegan option under 250 calories, try: Banana Smoothie."
                 )
             ),
         ]
     )
 
-    result = answer_question("Is spinach safe with warfarin, and suggest a high-potassium meal?", llm_client=client)
+    result = answer_question(
+        "Is spinach safe with warfarin, and suggest a vegan meal under 250 calories?", llm_client=client
+    )
 
     assert len(result.observations) == 3
     assert [obs.tool_name for obs in result.observations] == [
         "lookup_nutrient",
         "check_interaction",
-        "suggest_meal_plan",
+        "query_food_bank",
     ]
     assert all(obs.ok for obs in result.observations)
     assert "Disclaimer" in result.final_answer

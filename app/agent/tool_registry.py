@@ -19,9 +19,9 @@ from app.tools.nutrient_tool import (
     lookup_nutrient,
 )
 from app.tools.planning_tool import (
-    SuggestMealPlanInput,
-    SuggestMealPlanOutput,
-    suggest_meal_plan,
+    QueryFoodBankInput,
+    QueryFoodBankOutput,
+    query_food_bank,
 )
 from app.tools.safety_tool import (
     CheckInteractionInput,
@@ -71,14 +71,16 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         output_model=CheckInteractionOutput,
         fn=check_interaction,
     ),
-    "suggest_meal_plan": ToolSpec(
-        name="suggest_meal_plan",
+    "query_food_bank": ToolSpec(
+        name="query_food_bank",
         description=(
-            "Suggests meals toward a stated nutrition goal (e.g. high_protein, "
-            "high_potassium, low_sodium)."
+            "Searches the food bank's ready-made meal inventory by calorie ceiling, "
+            "minimum protein, dietary restrictions (vegetarian, vegan, gluten_free, "
+            "dairy_free, high_protein), and meal category (breakfast, lunch, dinner). "
+            "Use this for any request to suggest, plan, or find meals."
         ),
-        input_model=SuggestMealPlanInput,
-        output_model=SuggestMealPlanOutput,
-        fn=suggest_meal_plan,
+        input_model=QueryFoodBankInput,
+        output_model=QueryFoodBankOutput,
+        fn=query_food_bank,
     ),
 }

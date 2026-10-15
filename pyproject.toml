@@ -1,2 +1,12 @@
 [tool.ruff]
 target-version = "py39"
+
+[tool.ruff.lint]
+# FA100 suggests `X | None` via `from __future__ import annotations`, but that
+# only defers *parsing*, not operator support: Pydantic/TypedDict evaluate
+# annotation strings at runtime via eval(), and `float | None` raises
+# TypeError on Python 3.9 (PEP 604's `|` on types needs 3.10+) regardless of
+# the future import. Safe to apply only to plain dataclasses, not to this
+# codebase's Pydantic models, so disabled project-wide instead of
+# per-file-ignored.
+ignore = ["FA100"]

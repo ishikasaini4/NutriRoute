@@ -175,17 +175,17 @@ AGENT_GOLD_QUESTIONS: list[AgentGoldQuestion] = [
     {
         "id": "planning_01",
         "type": "planning",
-        "question": "Suggest a meal for a high-protein goal.",
-        "expected_tools": ["suggest_meal_plan"],
-        "answer_must_contain": ["chicken"],
+        "question": "Find a dinner meal from the food bank with at least 40 grams of protein.",
+        "expected_tools": ["query_food_bank"],
+        "answer_must_contain": ["chicken breast plate"],
         "disclaimer_required": False,
     },
     {
         "id": "planning_02",
         "type": "planning",
-        "question": "Suggest a meal for a high-potassium goal.",
-        "expected_tools": ["suggest_meal_plan"],
-        "answer_must_contain": ["banana"],
+        "question": "Find a vegan meal from the food bank with fewer than 200 calories.",
+        "expected_tools": ["query_food_bank"],
+        "answer_must_contain": ["banana smoothie"],
         "disclaimer_required": False,
     },
 ]

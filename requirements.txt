@@ -4,3 +4,5 @@ pydantic
 pytest
 ruff
 mypy
+openai
+httpx

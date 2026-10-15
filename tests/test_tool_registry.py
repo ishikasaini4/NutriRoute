@@ -5,7 +5,7 @@ from app.tools.nutrient_tool import LookupNutrientInput
 
 
 def test_three_tools_registered():
-    assert set(TOOL_REGISTRY) == {"lookup_nutrient", "check_interaction", "suggest_meal_plan"}
+    assert set(TOOL_REGISTRY) == {"lookup_nutrient", "check_interaction", "query_food_bank"}
 
 
 def test_each_tool_has_valid_openai_schema():

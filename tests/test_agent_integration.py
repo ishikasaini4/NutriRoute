@@ -76,3 +76,51 @@ def test_multi_tool_chain_nutrient_then_safety_then_planning():
     ]
     assert all(obs.ok for obs in result.observations)
     assert "Disclaimer" in result.final_answer
+
+
+def test_single_tool_safety_query_interaction_found():
+    safety_call = ToolCallRequest(
+        id="call_1", name="check_interaction",
+        arguments_json=json.dumps({"food_or_nutrient": "grapefruit", "medication_or_condition": "statins"}),
+    )
+    client = FakeLLMClient(
+        [
+            LLMResponse(content=None, tool_calls=[safety_call]),
+            LLMResponse(
+                content=(
+                    "Grapefruit can raise statin levels [source: check_interaction]. "
+                    "Disclaimer: This is not medical advice; consult a healthcare "
+                    "professional before changing your diet or medication."
+                )
+            ),
+        ]
+    )
+    result = answer_question("Is grapefruit safe with statins?", llm_client=client)
+    assert len(result.observations) == 1
+    assert result.observations[0].ok is True
+    assert result.observations[0].result["status"] == "interaction_found"
+    assert result.observations[0].result["severity"] == "moderate"
+    assert "Disclaimer" in result.final_answer
+
+
+def test_single_tool_safety_query_insufficient_evidence():
+    safety_call = ToolCallRequest(
+        id="call_1", name="check_interaction",
+        arguments_json=json.dumps({"food_or_nutrient": "banana", "medication_or_condition": "antibiotics"}),
+    )
+    client = FakeLLMClient(
+        [
+            LLMResponse(content=None, tool_calls=[safety_call]),
+            LLMResponse(
+                content=(
+                    "There's no curated data on banana and antibiotics. "
+                    "Disclaimer: This is not medical advice; consult a healthcare "
+                    "professional before changing your diet or medication."
+                )
+            ),
+        ]
+    )
+    result = answer_question("Is banana safe with antibiotics?", llm_client=client)
+    assert result.observations[0].result["status"] == "insufficient_evidence"
+    assert result.observations[0].result["severity"] is None
+    assert "Disclaimer" in result.final_answer

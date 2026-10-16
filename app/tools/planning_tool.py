@@ -1,9 +1,8 @@
 """query_food_bank tool implementation.
 
-Owner: Member G. Queries data/meal_plan.sqlite. Input/output shapes below
-mirror what the plan freezes in contracts/tools.py (QueryFoodBankInput/
-Output) — once Member D adds them there, import from contracts.tools
-instead of redefining here.
+Owner: Member G. Queries data/meal_plan.sqlite. Input/output shapes are
+frozen in contracts/tools.py (QueryFoodBankInput/MatchedMeal/Output) as of
+Day 1 — imported from there, not redefined here.
 
 Replaces the Day 1 suggest_meal_plan mock built by Member M to unblock
 agent-loop integration before this tool was ready.
@@ -12,9 +11,8 @@ agent-loop integration before this tool was ready.
 import re
 import sqlite3
 from pathlib import Path
-from typing import Optional
 
-from pydantic import BaseModel
+from contracts.tools import MatchedMeal, QueryFoodBankInput, QueryFoodBankOutput
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "meal_plan.sqlite"
 
@@ -23,28 +21,6 @@ def _normalize(value: str) -> str:
     """Lowercase, trim, and collapse whitespace/hyphen runs to a single
     underscore, so 'gluten free', 'gluten-free', and 'gluten_free' all match."""
     return re.sub(r"[\s\-]+", "_", value.strip().lower())
-
-
-class QueryFoodBankInput(BaseModel):
-    max_calories: Optional[float] = None
-    min_protein_g: Optional[float] = None
-    dietary_restrictions: list[str] = []
-    category: Optional[str] = None
-    limit: int = 5
-
-
-class MatchedMeal(BaseModel):
-    name: str
-    display_name: str
-    calories: float
-    protein_g: float
-    dietary_tags: list[str]
-    category: str
-
-
-class QueryFoodBankOutput(BaseModel):
-    meals: list[MatchedMeal]
-    found: bool
 
 
 def query_food_bank(input: QueryFoodBankInput, db_path: Path = DB_PATH) -> QueryFoodBankOutput:

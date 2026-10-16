@@ -11,6 +11,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python scripts/init_nutrients_db.py
 python scripts/init_meal_plan_db.py
+python scripts/init_interactions_db.py
 ```
 
 ## Running the API locally

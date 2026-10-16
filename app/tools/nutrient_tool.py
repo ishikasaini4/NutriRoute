@@ -1,17 +1,16 @@
 """lookup_nutrient tool implementation.
 
 Owner: Member E.
-Queries data/nutrients.sqlite. Input/output shapes below mirror what the
-plan freezes in contracts/tools.py (LookupNutrientInput/Output) — once
-Member D adds them there, import from contracts.tools instead of redefining
-here.
+Queries data/nutrients.sqlite. Input/output shapes are frozen in
+contracts/tools.py (LookupNutrientInput/Output) as of Day 1 — imported from
+there, not redefined here.
 """
 
 import re
 import sqlite3
 from pathlib import Path
 
-from pydantic import BaseModel
+from contracts.tools import LookupNutrientInput, LookupNutrientOutput
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "nutrients.sqlite"
 
@@ -20,18 +19,6 @@ def _normalize(value: str) -> str:
     """Lowercase, trim, and collapse whitespace/hyphen runs to a single
     underscore, so 'vitamin c', 'vitamin-c', and 'vitamin_c' all match."""
     return re.sub(r"[\s\-]+", "_", value.strip().lower())
-
-
-class LookupNutrientInput(BaseModel):
-    food_name: str
-    nutrient: str
-    amount_g: float
-
-
-class LookupNutrientOutput(BaseModel):
-    value: float
-    unit: str
-    found: bool
 
 
 def lookup_nutrient(

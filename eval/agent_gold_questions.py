@@ -169,7 +169,12 @@ AGENT_GOLD_QUESTIONS: list[AgentGoldQuestion] = [
         "question": "Is banana safe to eat while taking antibiotics?",
         "expected_tools": ["check_interaction"],
         "answer_must_contain": [],
-        "disclaimer_required": False,
+        # banana+antibiotics is unlisted in interactions.sqlite -> real
+        # check_interaction returns status="insufficient_evidence", which
+        # (per app/agent/prompts.py's Day 3 rule) requires the disclaimer:
+        # "we don't know" must never read as "it's safe." Flipped from
+        # False on the Day 1 mock, which conflated no-data with confirmed-safe.
+        "disclaimer_required": True,
     },
     # --- planning (2) ---
     {

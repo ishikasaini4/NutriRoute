@@ -6,6 +6,12 @@ can't silently drift out of sync with what's actually registered.
 Day 5: citation formatting and safety disclaimer rules. CITATION_TAG_FORMAT
 and DISCLAIMER_SENTENCE are exact, frozen strings that Day 6's eval sweep
 string-matches against, so this wording shouldn't change casually.
+Day 3 (Member D): the disclaimer trigger condition was updated to match
+check_interaction's real three-way status field (status="interaction_found"
+or status="insufficient_evidence") instead of the Day 1 mock's interacts
+boolean — "we don't know" must never read as "it's safe," so
+insufficient_evidence also requires the disclaimer. DISCLAIMER_SENTENCE
+itself is unchanged.
 """
 
 from app.agent.tool_registry import TOOL_REGISTRY
@@ -31,9 +37,11 @@ CITATION_AND_SAFETY_RULES = f"""Citation and safety policy:
 - Every numeric fact drawn from a tool must be followed immediately by a
   citation tag in the exact form {CITATION_TAG_FORMAT}, e.g.
   "358.0 mg [source: lookup_nutrient]".
-- If check_interaction returns interacts=True, your answer must include this
-  exact sentence, unmodified: "{DISCLAIMER_SENTENCE}"
-- Do not include the disclaimer sentence if no tool reported an interaction.
+- If check_interaction returns status "interaction_found" or status
+  "insufficient_evidence", your answer must include this exact sentence,
+  unmodified: "{DISCLAIMER_SENTENCE}"
+- Only skip the disclaimer sentence if check_interaction returns status
+  "no_known_interaction", or if check_interaction was not called at all.
 """
 
 

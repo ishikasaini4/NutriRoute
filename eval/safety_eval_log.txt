@@ -1,0 +1,3 @@
+NutriRoute safety eval run: 2026-10-15T08:24:50.987119+00:00
+26/26 passed, 0 failed
+false-negative rate: 0/18 known_interaction questions (0.0%)
